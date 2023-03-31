@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 
 void main() {
   runApp(const App());
@@ -21,7 +22,6 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
         backgroundColor: Colors.grey.shade100,
         body: TemperatureView());
   }
@@ -45,12 +45,13 @@ class TemperatureView extends StatelessWidget {
             Center(
               child: Text(
                 '${temperature.value.toInt()}°',
-                style: textTheme.displayLarge,
+                style: textTheme.displayLarge?.copyWith(
+                    fontWeight: FontWeight.w500, color: Colors.grey.shade400),
                 textAlign: TextAlign.center,
               ),
             ),
             Expanded(
-              child: Thermo(temperature: temperature),
+              child: Thermo(temperature: temperature.value),
             ),
             Slider(
               value: temperature.value,
@@ -72,7 +73,7 @@ class Thermo extends StatefulWidget {
     required this.temperature,
   });
 
-  final ValueNotifier<double> temperature;
+  final double temperature;
 
   @override
   State<Thermo> createState() => _ThermoState();
@@ -81,12 +82,33 @@ class Thermo extends StatefulWidget {
 class _ThermoState extends State<Thermo> with SingleTickerProviderStateMixin {
   late final AnimationController anim;
 
+  late final AnimationController impulseController;
+
+  final spring = SpringSimulation(
+    const SpringDescription(mass: 2, stiffness: 120, damping: 1),
+    0,
+    0.5,
+    1,
+  );
+
   @override
   void initState() {
     super.initState();
+
     anim = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 600))
-      ..repeat(reverse: true);
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    anim.animateWith(spring);
+  }
+
+  @override
+  void didUpdateWidget(covariant Thermo oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.temperature != widget.temperature) {
+      anim.animateWith(spring);
+    }
   }
 
   @override
@@ -95,8 +117,7 @@ class _ThermoState extends State<Thermo> with SingleTickerProviderStateMixin {
       animation: anim,
       builder: (context, _) {
         return CustomPaint(
-          painter:
-              ThermoPainter(widget.temperature.value, animation: anim.value),
+          painter: ThermoPainter(widget.temperature, animation: anim.value),
         );
       },
     );
@@ -251,7 +272,7 @@ class ThermoPainter extends CustomPainter {
     const gradientColors = [
       Colors.red,
       Colors.orange,
-      Colors.yellow,
+      Colors.amber,
       Colors.lightGreen,
       Colors.cyan,
     ];
@@ -268,7 +289,12 @@ class ThermoPainter extends CustomPainter {
     final r = Rect.fromPoints(liquidTopLeft, bottomRight);
     final pathLight = Path()
       ..moveTo(r.topLeft.dx, r.topLeft.dy - (30 * (1 - animation)))
-      ..lineTo(r.topRight.dx, r.topRight.dy - (30 * (animation)))
+      ..quadraticBezierTo(
+        r.topRight.dx - radius,
+        r.topRight.dy - (50 * (animation)),
+        r.topRight.dx,
+        r.topRight.dy - (30 * (animation)),
+      )
       ..lineTo(r.bottomRight.dx, r.bottomRight.dy)
       ..lineTo(r.bottomLeft.dx, r.bottomLeft.dy);
 
@@ -291,7 +317,12 @@ class ThermoPainter extends CustomPainter {
     // liquid
     final path = Path()
       ..moveTo(r.topLeft.dx, r.topLeft.dy - (30 * animation))
-      ..lineTo(r.topRight.dx, r.topRight.dy - (30 * (1 - animation)))
+      ..quadraticBezierTo(
+        r.topRight.dx - radius,
+        r.topRight.dy,
+        r.topRight.dx,
+        r.topRight.dy - (30 * (1 - animation)),
+      )
       ..lineTo(r.bottomRight.dx, r.bottomRight.dy)
       ..lineTo(r.bottomLeft.dx, r.bottomLeft.dy);
     canvas.drawPath(
