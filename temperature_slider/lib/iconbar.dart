@@ -13,7 +13,7 @@ class TemperatureIconBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 52, vertical: 64),
+      padding: const EdgeInsets.symmetric(horizontal: 52, vertical: 42),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -57,16 +57,20 @@ class ThermoIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final selectedButtonSize = size.height < 600 ? 42.0 : 64.0;
+    final buttonSize = size.height < 600 ? 32.0 : 48.0;
+
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(
-        width: 64,
-        height: 64,
+        width: selectedButtonSize,
+        height: selectedButtonSize,
         child: Center(
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
-            width: selected ? 64 : 48,
-            height: selected ? 64 : 48,
+            width: selected ? selectedButtonSize : buttonSize,
+            height: selected ? selectedButtonSize : buttonSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: selected ? color.withOpacity(.3) : Colors.grey.shade200,
@@ -74,7 +78,7 @@ class ThermoIcon extends StatelessWidget {
             child: Center(
               child: Icon(
                 icon,
-                size: selected ? 52 : 32,
+                size: selected ? selectedButtonSize-12 : buttonSize-12,
                 color: selected ? color : Colors.grey.shade300,
               ),
             ),

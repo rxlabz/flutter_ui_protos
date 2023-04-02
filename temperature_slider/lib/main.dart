@@ -38,6 +38,11 @@ class TemperatureView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final size = MediaQuery
+        .of(context)
+        .size;
+    print('TemperatureView.build... ${size.height}');
+    final style =  size.height < 600 ? textTheme.displayMedium : textTheme.displayLarge;
 
     return Center(
       child: SizedBox(
@@ -51,24 +56,29 @@ class TemperatureView extends StatelessWidget {
                 Center(
                   child: Text(
                     '  ${temperature.value.toInt()}°',
-                    style: textTheme.displayLarge?.copyWith(
+                    style: style?.copyWith(
                         fontWeight: FontWeight.w500, color: Colors.grey[350]),
                     textAlign: TextAlign.center,
                   ),
                 ),
                 Expanded(
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                          child: Thermo(temperature: temperature.value)),
-                      Positioned.fill(
-                        left: 300,
-                        child: ThermoSlider(
-                          value: temperature.value,
-                          onValueChanged: (value) => temperature.value = value,
-                        ),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints.loose(const Size(400, 800)),
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
+                              child: Thermo(temperature: temperature.value)),
+                          Positioned.fill(
+                            left: 300,
+                            child: ThermoSlider(
+                              value: temperature.value,
+                              onValueChanged: (value) => temperature.value = value,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
                 TemperatureIconBar(
