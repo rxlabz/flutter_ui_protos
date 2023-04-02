@@ -1,6 +1,6 @@
 # Flutter UI protos
 
-1. Thermo UI 🌡
+1. [Thermo UI](https://github.com/rxlabz/flutter_ui_protos/tree/main/temperature_slider) 🌡
 
 browser demo : http://rxlabz.github.io/flutter_ui_protos/thermo_ui/#/
 
