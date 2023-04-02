@@ -6,4 +6,4 @@
 - SpringAnimation
 - Colors gradient tween
 
-![thermo-ui](assets/thermo_ui.mp4)
+https://user-images.githubusercontent.com/1397248/229339908-595ba885-d96f-4bd0-9134-6a4759fc9779.mp4
