@@ -2,6 +2,8 @@
 
 1. Thermo UI 🌡
 
+browser demo : http://rxlabz.github.io/flutter_ui_protos/thermo_ui/#/
+
 - a lot of CustomPainter
 - SpringAnimation
 - Colors gradient tween
